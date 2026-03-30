@@ -2,52 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-enum TokenType {
-	_return,
-	_int,
-	_semicolon
-};
+#include "tokenizer.h"
+#include "parser.h"
+//#include "writer.h"
 
-struct Token {
-	enum TokenType type;
-	int value;
-};
-
-struct Token* tokenize(char buffer[]) {
-	struct Token* tokens = malloc(10);
-	size_t token_capacity = 9;
-	char* builder = malloc(10);
-	size_t capacity = 9;
-	
-	size_t size = 0;
-	char ch = *buffer;
-	while (ch) {
-		if (ch != ' ') {
-			if (size + 1 >= capacity) {
-				capacity *= 2;
-				builder = realloc(capacity);
-			}
-			*builder = ch;
-			++builder;
-		} else {
-			if (strcmp(builder, "return") == 0) {
-				
-			}
-
-			capacity = 9;
-			builder = ralloc(capacity + 1);
-		}
-		++buffer;
-		ch = *buffer;
-	}
-
-	return tokens;
-}
-
-
-
-int main(int argc, char* argv[]) {
-	//making sure we have a file to compile
+int main(int argc, char** argv) {
+	//making sure we have the right amount of argc
 	if (argc != 2) {
 		fprintf(stderr, "Wrong input. The Correct Input is...\n./mygcc <file.c>\n");
 		return 1;
@@ -56,25 +16,33 @@ int main(int argc, char* argv[]) {
 	//reading chars from file
 	size_t capacity = 2;
 	char* buffer = malloc(capacity);
-
-	FILE* inputFilePtr = fopen(argv[1], "r");
+	FILE* inputFilePtr = fopen(*(argv + 1), "r");
 	size_t size = 0;
 	int ch;
 	while ((ch = fgetc(inputFilePtr)) != EOF) {
 		if (size + 2 > capacity) {
-			capacity *= 2;		
+			capacity += 20;		
 			buffer = realloc(buffer, capacity);
 		}
 		buffer[size] = ch;
 		++size;
 	}
+	buffer = realloc(buffer, size);
 	buffer[size] = '\0';
 	fclose(inputFilePtr);
 
-	//turn the string into tokens
-	struct Token* tokens = tokenize(buffer);
-	free(buffer);	
+	for (size_t i = 0; i < size; ++i) {
+		printf("%c", buffer[i]);
+	}
 
+	struct Tokenizer* t = tokenizer_create(buffer, size);
+	tokenizer_turn_text_to_tokens(t);
+
+	struct Parser* p = parser_create(t->tokens, t->tokenCount);
+	parser_turn_tokens_to_tree(p);
+	
+
+	/*
 	//getting the name of the obj file
 	char* c = argv[1];
 	int i = 0;
@@ -92,6 +60,7 @@ int main(int argc, char* argv[]) {
 	//outputting assembly
 	FILE* outputFilePtr = fopen(objFileName, "w");
 	fclose(outputFilePtr);
+	*/
 
 	return 0;
 }
