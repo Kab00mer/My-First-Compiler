@@ -1,66 +1,36 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
+#include "input_output.h"
 #include "tokenizer.h"
 #include "parser.h"
-//#include "writer.h"
+#include "writer.h"
 
 int main(int argc, char** argv) {
-	//making sure we have the right amount of argc
 	if (argc != 2) {
 		fprintf(stderr, "Wrong input. The Correct Input is...\n./mygcc <file.c>\n");
 		return 1;
 	}
 
-	//reading chars from file
-	size_t capacity = 2;
-	char* buffer = malloc(capacity);
-	FILE* inputFilePtr = fopen(*(argv + 1), "r");
-	size_t size = 0;
-	int ch;
-	while ((ch = fgetc(inputFilePtr)) != EOF) {
-		if (size + 2 > capacity) {
-			capacity += 20;		
-			buffer = realloc(buffer, capacity);
-		}
-		buffer[size] = ch;
-		++size;
-	}
-	buffer = realloc(buffer, size);
-	buffer[size] = '\0';
-	fclose(inputFilePtr);
+	//reading c file
+	struct InputOutput* io = input_output_create(argv[1]);
+	input_output_read_input_file(io);
 
-	for (size_t i = 0; i < size; ++i) {
-		printf("%c", buffer[i]);
-	}
-
-	struct Tokenizer* t = tokenizer_create(buffer, size);
+	//tokenizing
+	struct Tokenizer* t = tokenizer_create(io->contents, io->contentsSize);
 	tokenizer_turn_text_to_tokens(t);
 
+	//parsing
 	struct Parser* p = parser_create(t->tokens, t->tokenCount);
 	parser_turn_tokens_to_tree(p);
 	
+	//writing assembly
+	struct Writer* w = writer_create(p->root);
+	writer_turn_tree_to_assembly(w);
 
-	/*
-	//getting the name of the obj file
-	char* c = argv[1];
-	int i = 0;
-	while (c[i]) ++i;
+	//outputing assembly file
+	input_output_create_output_path(io);
+	input_output_write_assembly(io, w->assembly);
 
-	char objFileName[i + 3];
-	for (int j = 0; j < i; ++j) {
-		objFileName[j] = c[j];
-	}
-	objFileName[i - 1] = 'a';
-	objFileName[i] = 's';
-	objFileName[i + 1] = 'm';
-	objFileName[i + 2] = '\0';
-
-	//outputting assembly
-	FILE* outputFilePtr = fopen(objFileName, "w");
-	fclose(outputFilePtr);
-	*/
-
+	printf("Compiling complete; Result is in %s\n", io->outputPath);
 	return 0;
 }

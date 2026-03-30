@@ -14,7 +14,7 @@ struct NodeReturn {
 struct Parser {
 	struct Token* tokens;
 	size_t tokenCount;
-	struct NodeReturn root;
+	struct NodeReturn* root;
 };
 
 struct Parser* parser_create(struct Token* tokens, size_t tokenCount);
