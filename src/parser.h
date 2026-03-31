@@ -3,21 +3,31 @@
 
 #include "tokenizer.h"
 
-struct NodeExpression {
-	int value;	
+enum StatementType {
+	STATEMENT_RETURN,
+	STATEMENT_INITIALIZE
 };
 
-struct NodeReturn {
-	struct NodeExpression* returnValue;	
+struct NodeStatement {
+	enum StatementType type;
+	size_t expressionCount;
+	char* expressions[];
+};
+
+struct NodeProgram {
+	size_t statementCount;
+	size_t statementCapacity;
+	struct NodeStatement* statements;
 };
 
 struct Parser {
-	struct Token* tokens;
 	size_t tokenCount;
-	struct NodeReturn* root;
+	struct Token* tokens;
+	struct NodeProgram* root;
 };
 
 struct Parser* parser_create(struct Token* tokens, size_t tokenCount);
 void parser_turn_tokens_to_tree(struct Parser* p);
+void parser_append_statement(struct Parser* p, struct NodeStatement* s);
 
 #endif
