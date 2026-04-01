@@ -15,9 +15,11 @@ void writer_turn_tree_to_assembly(struct Writer* w) {
 	concat(assembly, "    mov rax, 60\n");
 	concat(assembly, "    mov rdi, ");
 
+	/*
 	char buffer[5];
 	sprintf(buffer, "%d", w->root->returnValue->value);
 	concat(assembly, buffer);
+	*/
 
 	concat(assembly, "\n    syscall");
 	assembly[strlen(assembly)] = '\0';

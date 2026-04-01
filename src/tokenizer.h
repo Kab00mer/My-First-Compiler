@@ -28,9 +28,11 @@ struct Tokenizer {
 };
 
 struct Tokenizer* tokenizer_create(char* text, size_t size);	
+
 void tokenizer_turn_text_to_tokens(struct Tokenizer* t);
 char* build_str(char* start);
 void tokenizer_append_token(struct Tokenizer* t, struct Token token);
+
 void tokenizer_print_tokens(struct Tokenizer* t);
 
 #endif

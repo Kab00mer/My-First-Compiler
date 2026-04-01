@@ -23,17 +23,20 @@ int main(int argc, char** argv) {
 	//parsing
 	struct Parser* p = parser_create(t->tokens, t->tokenCount);
 	parser_turn_tokens_to_tree(p);
+	parser_print_tree(p);
 	
-	/*
 	//writing assembly
 	struct Writer* w = writer_create(p->root);
 	writer_turn_tree_to_assembly(w);
+	writer_print_assembly(w);
 
+	/*
 	//outputing assembly file
 	input_output_create_output_path(io);
 	input_output_write_assembly(io, w->assembly);
 	*/
 
 	printf("Compiling complete; Result is in %s\n", io->outputPath);
+
 	return 0;
 }
