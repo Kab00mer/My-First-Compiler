@@ -30,11 +30,9 @@ int main(int argc, char** argv) {
 	writer_turn_tree_to_assembly(w);
 	writer_print_assembly(w);
 
-	/*
 	//outputing assembly file
 	input_output_create_output_path(io);
 	input_output_write_assembly(io, w->assembly);
-	*/
 
 	printf("Compiling complete; Result is in %s\n", io->outputPath);
 
