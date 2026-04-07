@@ -48,6 +48,20 @@ void parser_turn_tokens_to_tree(struct Parser* p) {
 			
 			i += 4;
 
+		} else if (i + 3 < p->tokenCount
+				&& p->tokens[i].type == TOKEN_IDENTIFIER
+				&& p->tokens[i + 1].type == TOKEN_EQUALS
+				&& (p->tokens[i + 2].type == TOKEN_INT || p->tokens[i + 2].type == TOKEN_IDENTIFIER)
+				&& p->tokens[i + 3].type == TOKEN_SEMICOLON) {
+
+			struct NodeStatement* s = node_statement_create(STATEMENT_ASSIGNMENT, 2);
+			s->expressions[0] = p->tokens[i].value;
+			s->expressions[1] = p->tokens[i + 2].value;
+
+			parser_append_statement(p, s);
+
+			i += 3;
+
 		} else {
 			fprintf(stderr, "Parsing Tokens Failed: Make sure you are using proper syntax");
 		}

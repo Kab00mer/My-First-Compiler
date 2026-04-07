@@ -20,7 +20,8 @@ void writer_turn_tree_to_assembly(struct Writer* w);
 void writer_append_to_assembly(struct Writer* w, char* str);
 
 void writer_return(struct Writer* w, char* integer);
-void writer_initialize_variable(struct Writer* w, char* expr1, char* expr2s);
+void writer_initialize_variable(struct Writer* w, char* expr1, char* expr2);
+void writer_assign_variable_value(struct Writer* w, char* expr1, char* expr2);
 void writer_access_mapped_value(struct Writer* w, char* varName);
 
 void writer_print_assembly(struct Writer* w);

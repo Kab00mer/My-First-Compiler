@@ -35,6 +35,9 @@ void writer_turn_tree_to_assembly(struct Writer* w) {
 			case STATEMENT_INITIALIZE :
 				writer_initialize_variable(w, statement->expressions[0], statement->expressions[1]);
 				break;
+			case STATEMENT_ASSIGNMENT :
+				writer_assign_variable_value(w, statement->expressions[0], statement->expressions[1]);
+				break;
 		}
 	}
 	w->assembly[w->assemblySize] = '\0';
@@ -85,6 +88,25 @@ void writer_initialize_variable(struct Writer* w, char* expr1, char* expr2) {
 	w->variableCount += 1;
 }
 
+void writer_assign_variable_value(struct Writer* w, char* expr1, char* expr2) {
+	if (expr2[0] >= '0' && expr2[0] <= '9') {
+		writer_append_to_assembly(w, "    mov qword ");
+		writer_access_mapped_value(w, expr1);
+		writer_append_to_assembly(w, ", ");
+		writer_append_to_assembly(w, expr2);
+	} else {
+		writer_append_to_assembly(w, "    mov rax, ");
+		writer_access_mapped_value(w, expr2);
+		writer_append_to_assembly(w, "\n");
+
+		writer_append_to_assembly(w, "    mov qword ");
+		writer_access_mapped_value(w, expr1);
+		writer_append_to_assembly(w, ", rax");
+	}
+
+	writer_append_to_assembly(w, "\n");
+}
+
 void writer_access_mapped_value(struct Writer* w, char* varName) {
 	bool found = false;
 	size_t i = 0;
@@ -93,11 +115,16 @@ void writer_access_mapped_value(struct Writer* w, char* varName) {
 	}
 
 	if (found) {
-		writer_append_to_assembly(w, "[rsp + ");
-		char* offest;
-		sprintf(offest, "%d", (int)(w->variableCount - (i + 1)) * 8);
-		writer_append_to_assembly(w, offest);
-		writer_append_to_assembly(w, "]");
+		writer_append_to_assembly(w, "[rsp");
+		size_t offset = (w->variableCount - (i + 1)) * 8;
+		if (offset != 0) {
+			char* buffer;
+			sprintf(buffer, " + %d]", (int)offset);
+			writer_append_to_assembly(w, buffer);
+
+		} else {
+			writer_append_to_assembly(w, "]");
+		}
 
 	} else {
 		fprintf(stderr, "Writing Error: There is no variable named \"%s\" in memory", varName);

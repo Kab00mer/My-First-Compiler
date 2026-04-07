@@ -5,7 +5,8 @@
 
 enum StatementType {
 	STATEMENT_RETURN,
-	STATEMENT_INITIALIZE
+	STATEMENT_INITIALIZE,
+	STATEMENT_ASSIGNMENT
 };
 
 struct NodeStatement {
